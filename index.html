@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerador de Personagens</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #1c1c1c;
+    color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px; /* Reduzindo o padding para telas menores */
+    margin: 0; /* Removendo margem padrão do body */
+  }
+  h1 {
+    color: #ff5555;
+    text-align: center; /* Centraliza o título */
+    margin-bottom: 20px;
+  }
+  button {
+    background-color: #ff5555; /* Mudei para uma cor mais visível e chamativa */
+    color: #fff;
+    border: none;
+    padding: 12px 25px; /* Aumentei um pouco o botão */
+    cursor: pointer;
+    font-size: 18px; /* Aumentei a fonte para melhor toque */
+    margin: 15px 0;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+    width: 90%; /* Ocupa mais largura em celular */
+    max-width: 400px; /* Limite máximo para o botão */
+  }
+  button:hover, button:focus {
+    background-color: #ff7777; /* Efeito hover/focus */
+    outline: none; /* Remove o outline feio no mobile após o click/focus */
+  }
+  .character {
+    background-color: #2c2c2c;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 600px;
+    width: 100%; /* Garante que ocupe a largura total disponível */
+    box-sizing: border-box; /* Garante que padding e borda sejam incluídos na largura */
+    margin-top: 10px;
+  }
+  .block-title {
+    color: #ffaa00;
+    margin-top: 15px; /* Espaçamento melhorado */
+    font-size: 1.1em;
+    font-weight: bold;
+    border-bottom: 1px solid #444; /* Linha sutil para separar blocos */
+    padding-bottom: 5px;
+  }
+  .block-content {
+    margin: 8px 0 15px 10px; /* Ajuste no espaçamento */
+    line-height: 1.4;
+  }
+</style>
+</head>
+<body>
+<h1>Gerador de Personagens</h1>
+<button onclick="gerarPersonagem()">Gerar Personagem</button>
+<div class="character" id="personagem"></div>
+
+<script>
+const data = {
+  "papel_social":[
+    "Estudante","Professor","Motorista","Agricultor","Comerciante","Dono de loja",
+    "Enfermeiro","Bibliotecário","Jornalista","Cozinheiro","Ladrão","Assassino de aluguel",
+    "Traficante","Falsificador","Hacker criminoso","Contrabandista","Gangster de bairro",
+    "Estelionatário","Sequestrador","Espião","Médico","Engenheiro","Cientista","Pesquisador",
+    "Inventor","Hacker legal","Programador","Bioquímico","Roboticista","Astrônomo","Político",
+    "Juiz","General","Diplomata","Prefeito","Líder religioso","Xerife","Conselheiro","CEO",
+    "Oficial de segurança","Bruxa","Vampiro","Sacerdote","Elemental","Invocador","Mago",
+    "Necromante","Fada","Monstro humanoide","Espírito ancestral","Soldado","Guarda real",
+    "Caçador de monstros","Gladiador","Mercenário","Pistoleiro","Atirador de elite","Ninja",
+    "Samurai","Capitão de navio","Cantor","Idol","Ator","Streamer","Escritor","Pintor",
+    "Dançarino","Fotógrafo","Comediante","Diretor de cinema","Piloto espacial","Ciborgue",
+    "Clonador","Engenheiro de IA","Navegador de realidade virtual","Contrabandista intergaláctico",
+    "Cientista alienígena","Mercador de tecnologia","Hacker futurista","Androide"
+  ],
+  "tracos_personalidade":[
+    "Bom","Mal","Inteligente","Ingênuo","Revoltado","Dogmático","Pragmático","Emocional",
+    "Arrogante","Humilde","Obsessivo","Corajoso","Covarde","Gentil","Cruel","Sarcástico",
+    "Teimoso","Flexível","Paciente","Impulsivo","Introvertido","Extrovertido","Calculista",
+    "Desorganizado","Leal","Traiçoeiro","Otimista","Pessimista","Sensível","Insensível",
+    "Determinado","Indeciso","Apaixonado","Frio","Ciumento","Generoso","Egoísta","Ambicioso",
+    "Preguiçoso","Trabalhador","Honesto","Manipulador","Observador","Distraído","Persistente",
+    "Impaciente","Realista","Idealista","Criativo","Conservador"
+  ],
+  "arco_narrativo":[
+    "Queda","Redenção","Ascensão","Corrupção","Sobrevivência","Vingança","Transformação",
+    "Sacrifício","Descoberta","Iluminação","Obsessão","Perda","Amor proibido","Superação",
+    "Conquista","Traição","Rebelião","Fuga","Isolamento","Crescimento pessoal","Queda social",
+    "Ascensão social","Queda emocional","Renascimento","Autodestruição","Libertação","Aprendizado",
+    "Conflito interno","Conflito externo","Busca por poder","Busca por conhecimento",
+    "Busca por justiça","Busca por vingança","Tentativa de redenção","Perda de inocência",
+    "Queda física","Ascensão física","Descoberta de identidade","Transformação moral",
+    "Transformação espiritual","Luto","Crescimento profissional","Fracasso","Triunfo",
+    "Conquista emocional","Conquista intelectual","Conquista espiritual","Aliança","Conflito com mentor",
+    "Conflito com rival"
+  ],
+  "conflitos_eventos":[
+    "Morte de conhecido","Gravidez inesperada","Mudança súbita de cidade","Perda de emprego",
+    "Roubo ou assalto","Doença grave","Acidente","Traição de amigo","Perda de família",
+    "Falência","Escândalo público","Exílio","Descoberta de segredo familiar","Conflito com vizinho",
+    "Conflito com mentor","Conflito com rival","Sequestro","Tentativa de assassinato",
+    "Fuga de prisão","Perda de memória","Perda de status social","Abandono",
+    "Desaparecimento de ente querido","Divórcio dos pais","Rejeição amorosa","Bullying",
+    "Acusação injusta","Pressão familiar","Dependência química","Vício em jogo ou poder",
+    "Problemas legais","Falta de recursos","Ataque sobrenatural","Invasão de propriedade",
+    "Catástrofe natural","Guerra ou conflito armado","Apocalipse","Perda de habilidade ou poder",
+    "Transformação física indesejada","Assédio ou perseguição","Dificuldades escolares",
+    "Desapego forçado","Isolamento social","Conflito ético","Conflito religioso","Conflito cultural",
+    "Conflito profissional","Conflito emocional","Descoberta de traição amorosa","Descoberta de falsidade ou fraude"
+  ],
+  "genero_estilo":[
+    "Terror","Terror psicológico","Suspense","Mistério","Policial","Thriller","Romance",
+    "Romance dramático","Romance proibido","Romance adolescente","Comédia","Comédia ácida",
+    "Comédia romântica","Drama","Drama familiar","Drama psicológico","Fantasia","Fantasia sombria",
+    "Fantasia épica","Fantasia urbana","Ficção científica","Cyberpunk","Sci-fi espacial","Distopia",
+    "Utopia","Steampunk","Pós-apocalíptico","Surrealismo","Horror cósmico","Mitologia",
+    "Épico histórico","Romance histórico","Realismo","Realismo mágico","Ficção juvenil",
+    "Ficção adulta","Ficção especulativa","Noir","Gótico","Político","Satírico","Aventuras",
+    "Viagem no tempo","Mistério sobrenatural","Conspiração","Espionagem","Thriller psicológico",
+    "Fantasia científica","Horror sobrenatural","Drama de sobrevivência"
+  ]
+};
+
+function getRandomItems(array, maxItems) {
+  const count = Math.floor(Math.random() * maxItems) + 1;
+  const shuffled = array.sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
+}
+
+function gerarPersonagem() {
+  const papel = getRandomItems(data.papel_social, 1)[0];
+  const tracos = getRandomItems(data.tracos_personalidade, 3);
+  const arcos = getRandomItems(data.arco_narrativo, 2);
+  const conflitos = getRandomItems(data.conflitos_eventos, 3);
+  const generos = getRandomItems(data.genero_estilo, 2);
+
+  const div = document.getElementById('personagem');
+  div.innerHTML = `
+    <div class="block-title">Papel / Arquétipo Social:</div>
+    <div class="block-content">${papel}</div>
+
+    <div class="block-title">Traços de Personalidade:</div>
+    <div class="block-content">${tracos.join(', ')}</div>
+
+    <div class="block-title">Arco(s) Narrativo(s):</div>
+    <div class="block-content">${arcos.join(', ')}</div>
+
+    <div class="block-title">Conflito(s) / Evento(s) de Vida:</div>
+    <div class="block-content">${conflitos.join(', ')}</div>
+
+    <div class="block-title">Gênero(s) / Estilo(s) Literário(s):</div>
+    <div class="block-content">${generos.join(', ')}</div>
+  `;
+}
+</script>
+</body>
+</html>
